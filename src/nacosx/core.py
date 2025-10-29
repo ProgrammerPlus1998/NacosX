@@ -2,6 +2,7 @@
 Core functionality for Nacos service registration and management.
 """
 
+import nacos
 import threading
 import time
 import signal
@@ -11,10 +12,6 @@ import asyncio
 from functools import wraps
 from typing import Callable, Optional, Dict
 
-try:
-    import nacos
-except ImportError:
-    nacos = None
 
 
 # Default configuration constants
