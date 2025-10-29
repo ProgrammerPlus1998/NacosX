@@ -4,27 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nacosx"
-version = "0.1.0"
+version = "0.1.dev0"
 description = "A decorator-based Python library for automatic Nacos service registration"
 readme = "README.md"
 authors = [
-    { name = "ProgrammerPlus1998", email = "your.email@example.com" }
+    { name = "ProgrammerPlus1998", email = "cxygjj@gmail.com" }
 ]
 license = { text = "MIT" }
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "nacos-sdk-python>=0.1.0",
+    "nacos-sdk-python>=2.0.0,<3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -51,4 +53,4 @@ python_functions = ["test_*"]
 
 [tool.black]
 line-length = 100
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313', 'py314']

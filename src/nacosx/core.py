@@ -35,7 +35,7 @@ class NacosService:
     
     def __init__(
         self,
-        server_addr: str,
+        nacos_addr: str,
         namespace: Optional[str],
         service_name: str,
         service_ip: str,
@@ -55,7 +55,7 @@ class NacosService:
         Initialize NacosService.
         
         Args:
-            server_addr: Nacos server address
+            nacos_addr: Nacos server address
             namespace: Nacos namespace
             service_name: Service name to register
             service_ip: Service IP address
@@ -71,7 +71,7 @@ class NacosService:
             heartbeat_max_failures: Max consecutive heartbeat failures before re-registration
             heartbeat_retry_delay: Delay between heartbeat retries (seconds)
         """
-        self.server_addr = server_addr
+        self.nacos_addr = nacos_addr
         self.namespace = namespace
         self.service_name = service_name
         self.service_ip = service_ip
@@ -117,7 +117,7 @@ class NacosService:
                 if nacos is None:
                     raise ImportError("nacos-sdk-python is not installed. Install it with: pip install nacos-sdk-python")
                 self._client = nacos.NacosClient(
-                    self.server_addr,
+                    self.nacos_addr,
                     namespace=self.namespace,
                     username=self.username,
                     password=self.password
@@ -322,7 +322,7 @@ def _call_func(func: Callable, is_coroutine: bool, *args, **kwargs):
 
 def nacos_registry(
     enabled: bool = True,
-    server_addr: str = "",
+    nacos_addr: str = "",
     namespace: Optional[str] = None,
     service_name: str = "",
     service_addr: str = "",
@@ -345,7 +345,7 @@ def nacos_registry(
     
     Args:
         enabled: Enable/disable registration
-        server_addr: Nacos server address
+        nacos_addr: Nacos server address
         namespace: Nacos namespace
         service_name: Service name to register
         service_addr: Service address in "ip:port" format
@@ -373,8 +373,8 @@ def nacos_registry(
                 return _call_func(func, is_coroutine, *args, **kwargs)
 
             # Parse service_addr
-            if not server_addr:
-                msg = "Nacos server_addr is required"
+            if not nacos_addr:
+                msg = "Nacos nacos_addr is required"
                 if raise_on_register_fail:
                     raise ValueError(msg)
                 else:
@@ -410,7 +410,7 @@ def nacos_registry(
 
             # Create NacosService instance
             nacos_svc = NacosService(
-                server_addr=server_addr,
+                nacos_addr=nacos_addr,
                 namespace=namespace,
                 service_name=service_name,
                 service_ip=service_ip,

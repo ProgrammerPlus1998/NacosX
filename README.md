@@ -5,6 +5,8 @@
 **NacosX** is a decorator-based Python library designed to make service registration and discovery with Nacos effortless.  
 It automates the entire lifecycle — registration, heartbeat maintenance, re-registration on failure, and graceful shutdown — with just one decorator.
 
+Built on top of [nacos-sdk-python](https://github.com/nacos-group/nacos-sdk-python), NacosX provides a higher-level, decorator-based abstraction for seamless integration.
+
 ---
 
 ## 🌟 Key Features
@@ -36,7 +38,7 @@ import time
 from nacosx import nacos_registry
 
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     namespace="dev",
     service_name="example-service",
     service_addr="192.168.0.101:50051",
@@ -65,7 +67,7 @@ if __name__ == "__main__":
 
 ```python
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="my-service",
     service_addr="192.168.1.10:8080",
     metadata={"version": "1.0.0", "env": "production"},
@@ -82,7 +84,7 @@ import asyncio
 from nacosx import nacos_registry
 
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="async-service",
     service_addr="0.0.0.0:8080",
 )
@@ -108,7 +110,7 @@ def run_my_service():
     time.sleep(10)
 
 with NacosService(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     namespace="dev",
     service_name="my-service",
     service_ip="192.168.1.10",
@@ -126,7 +128,7 @@ Or without context manager:
 from nacosx import NacosService
 
 svc = NacosService(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="my-service",
     service_ip="192.168.1.10",
     service_port=8080,
@@ -147,7 +149,7 @@ finally:
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `server_addr` | `str` | ✅ | - | Nacos server address (e.g., `127.0.0.1:8848`) |
+| `nacos_addr` | `str` | ✅ | - | Nacos server address (e.g., `127.0.0.1:8848`) |
 | `service_name` | `str` | ✅ | - | Service name to register |
 | `service_addr` | `str` | ✅ | - | Service address (IP:PORT) |
 | `namespace` | `str` | ❌ | `public` | Nacos namespace |
@@ -171,7 +173,7 @@ finally:
 ## 📝 Requirements
 
 - Python >= 3.7
-- requests >= 2.25.0
+- [nacos-sdk-python](https://github.com/nacos-group/nacos-sdk-python) >= 2.0.0, < 3.0.0
 
 ---
 

@@ -5,6 +5,8 @@
 **NacosX** 是一个基于装饰器的 Python 库，旨在让 Nacos 服务注册与发现变得轻松简单。  
 它仅需一个装饰器，就能自动化整个生命周期 — 注册、心跳维护、失败重注册以及优雅关闭。
 
+基于 [nacos-sdk-python](https://github.com/nacos-group/nacos-sdk-python) 构建，NacosX 提供了更高级别、基于装饰器的抽象，实现无缝集成。
+
 ---
 
 ## 🌟 核心特性
@@ -36,7 +38,7 @@ import time
 from nacosx import nacos_registry
 
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     namespace="dev",
     service_name="example-service",
     service_addr="192.168.0.101:50051",
@@ -65,7 +67,7 @@ if __name__ == "__main__":
 
 ```python
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="my-service",
     service_addr="192.168.1.10:8080",
     metadata={"version": "1.0.0", "env": "production"},
@@ -82,7 +84,7 @@ import asyncio
 from nacosx import nacos_registry
 
 @nacos_registry(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="async-service",
     service_addr="0.0.0.0:8080",
 )
@@ -108,7 +110,7 @@ def run_my_service():
     time.sleep(10)
 
 with NacosService(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     namespace="dev",
     service_name="my-service",
     service_ip="192.168.1.10",
@@ -126,7 +128,7 @@ with NacosService(
 from nacosx import NacosService
 
 svc = NacosService(
-    server_addr="127.0.0.1:8848",
+    nacos_addr="127.0.0.1:8848",
     service_name="my-service",
     service_ip="192.168.1.10",
     service_port=8080,
@@ -147,7 +149,7 @@ finally:
 
 | 参数 | 类型 | 必填 | 默认值 | 描述 |
 |------|------|------|--------|------|
-| `server_addr` | `str` | ✅ | - | Nacos 服务器地址（如 `127.0.0.1:8848`） |
+| `nacos_addr` | `str` | ✅ | - | Nacos 服务器地址（如 `127.0.0.1:8848`） |
 | `service_name` | `str` | ✅ | - | 要注册的服务名称 |
 | `service_addr` | `str` | ✅ | - | 服务地址（IP:端口） |
 | `namespace` | `str` | ❌ | `public` | Nacos 命名空间 |
@@ -171,7 +173,7 @@ finally:
 ## 📝 依赖要求
 
 - Python >= 3.7
-- requests >= 2.25.0
+- [nacos-sdk-python](https://github.com/nacos-group/nacos-sdk-python) >= 2.0.0, < 3.0.0
 
 ---
 
