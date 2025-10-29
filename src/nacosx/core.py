@@ -10,9 +10,7 @@ import sys
 import traceback
 import asyncio
 from functools import wraps
-from typing import Callable, Optional, Dict
-
-
+from typing import Callable, Optional, Dict, Any
 
 # Default configuration constants
 DEFAULT_REGISTER_RETRIES = 3
@@ -84,7 +82,7 @@ class NacosService:
         self.heartbeat_max_failures = heartbeat_max_failures
         self.heartbeat_retry_delay = heartbeat_retry_delay
 
-        self._client = None
+        self._client: Optional[Any] = None
         self._heartbeat_thread = None
         self._heartbeat_stop = threading.Event()
         self._lock = threading.RLock()
@@ -125,7 +123,7 @@ class NacosService:
         """Attempt to register service once."""
         try:
             with self._lock:
-                self._client.add_naming_instance(
+                self._client.add_naming_instance(  # type: ignore
                     self.service_name,
                     self.service_ip,
                     self.service_port,
@@ -159,7 +157,7 @@ class NacosService:
         """Attempt to deregister service once."""
         try:
             with self._lock:
-                self._client.remove_naming_instance(self.service_name, self.service_ip, self.service_port)
+                self._client.remove_naming_instance(self.service_name, self.service_ip, self.service_port)  # type: ignore
             self._registered = False
             self._log("info", "✓ Service deregistered from Nacos")
             return True
@@ -171,6 +169,7 @@ class NacosService:
     def _heartbeat_loop(self):
         """Heartbeat thread main loop with retry and self-healing."""
         fail_count = 0
+        was_failing = False  # Track if we were in a failing state
         while not self._heartbeat_stop.is_set():
             # Wait with interrupt support
             is_stopped = self._heartbeat_stop.wait(self.heartbeat_interval)
@@ -181,11 +180,19 @@ class NacosService:
             
             try:
                 with self._lock:
-                    self._client.send_heartbeat(self.service_name, self.service_ip, self.service_port)
+                    self._client.send_heartbeat(self.service_name, self.service_ip, self.service_port)  # type: ignore
                 fail_count = 0
+                
+                # Show recovery message if we were previously failing
+                if was_failing:
+                    self._log("info", "✓ Nacos connection recovered")
+                    was_failing = False
+                    
                 # Optional debug logging
                 # self._log("debug", "✓ Heartbeat sent successfully")
             except Exception as e:
+                # Mark that we're in a failing state
+                was_failing = True
                 fail_count += 1
                 self._log("warning", f"⚠ Heartbeat failed ({fail_count}/{self.heartbeat_max_failures}): {e}")
                 self._log("debug", traceback.format_exc())
@@ -201,7 +208,7 @@ class NacosService:
                         # Try to remove first (may fail)
                         try:
                             with self._lock:
-                                self._client.remove_naming_instance(self.service_name, self.service_ip, self.service_port)
+                                self._client.remove_naming_instance(self.service_name, self.service_ip, self.service_port)  # type: ignore
                         except Exception:
                             pass  # Ignore remove errors
                         
