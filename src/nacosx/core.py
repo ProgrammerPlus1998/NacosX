@@ -426,12 +426,25 @@ def nacos_registry(
                 heartbeat_retry_delay=heartbeat_retry_delay,
             )
 
-            # Register after service start: install signal handlers first, then start service, then register
+            # Install signal handlers first
             nacos_svc.install_signal_handlers()
+            
+            # For long-running services, we need to register immediately but in a non-blocking way
+            def delayed_registration():
+                # Longer delay to ensure service has fully started
+                time.sleep(5)
+                try:
+                    nacos_svc.start()
+                except Exception as e:
+                    nacos_svc._log("error", f"✗ Failed to register service: {e}")
+            
+            # Start registration in a separate thread so it doesn't block service startup
+            registration_thread = threading.Thread(target=delayed_registration, daemon=True)
+            registration_thread.start()
+            
             try:
+                # Execute the actual service function
                 result = _call_func(func, is_coroutine, *args, **kwargs)
-                # Service started successfully, now register to Nacos
-                nacos_svc.start()
                 return result
             finally:
                 try:

@@ -5,7 +5,7 @@ This library provides automatic service registration, heartbeat management,
 and graceful shutdown with built-in retry and self-healing support.
 """
 
-__version__ = "0.1.dev1"
+__version__ = "0.1.dev2"
 __author__ = "ProgrammerPlus1998"
 
 from .core import (
