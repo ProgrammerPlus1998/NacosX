@@ -117,8 +117,9 @@ with NacosService(
     service_port=8080,
     metadata={"version": "1.0.0"},
 ) as svc:
-    # Service is automatically registered here
     run_my_service()
+    # Then register to Nacos when service is ready
+    svc.start()
     # Service will be automatically deregistered when exiting the context
 ```
 

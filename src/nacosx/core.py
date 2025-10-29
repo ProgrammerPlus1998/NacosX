@@ -298,7 +298,9 @@ class NacosService:
     def __enter__(self):
         """Context manager entry."""
         self.install_signal_handlers()
-        self.start()
+        # For context manager, we want to control registration timing explicitly
+        # Don't register immediately, let the user call start() manually after service is ready
+        self._init_client()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -424,22 +426,18 @@ def nacos_registry(
                 heartbeat_retry_delay=heartbeat_retry_delay,
             )
 
-            # Use context manager for lifecycle management
+            # Register after service start: install signal handlers first, then start service, then register
+            nacos_svc.install_signal_handlers()
             try:
-                with nacos_svc:
-                    return _call_func(func, is_coroutine, *args, **kwargs)
-            except Exception as e:
-                if logger:
-                    logger.error(f"✗ Exception in decorated function: {e}")
-                    logger.debug(traceback.format_exc())
-                else:
-                    print(f"✗ Exception in decorated function: {e}")
-                    print(traceback.format_exc())
-                
-                if raise_on_register_fail:
-                    raise
-                else:
-                    return None
+                result = _call_func(func, is_coroutine, *args, **kwargs)
+                # Service started successfully, now register to Nacos
+                nacos_svc.start()
+                return result
+            finally:
+                try:
+                    nacos_svc.stop()
+                finally:
+                    nacos_svc.restore_signal_handlers()
 
         return wrapper
     return decorator

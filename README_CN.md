@@ -117,8 +117,9 @@ with NacosService(
     service_port=8080,
     metadata={"version": "1.0.0"},
 ) as svc:
-    # 进入上下文时自动注册服务
     run_my_service()
+    # 服务就绪时注册到 Nacos
+    svc.start()
     # 退出上下文时自动注销服务
 ```
 
